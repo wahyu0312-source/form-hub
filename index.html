@@ -35,7 +35,10 @@
     const norm=s=>(s||'').toString().toLowerCase();
 
     function render(items){
-      if(!items.length){ listEl.innerHTML='<article><div class="error">フォームが見つかりません。forms.json を確認してください。</div></article>'; return; }
+      if(!items.length){
+        listEl.innerHTML='<article><div class="error">フォームが見つかりません。forms.json を確認してください。</div></article>';
+        return;
+      }
       listEl.innerHTML=items.map(f=>`
         <article>
           <header><strong>${f.title||'(無題フォーム)'}</strong></header>
@@ -63,8 +66,11 @@
         FORMS=await res.json();
         FORMS.sort((a,b)=> (a.title||'').localeCompare(b.title||''));
         fillCats(); render(FORMS);
-        qEl.addEventListener('input',applyFilter); catEl.addEventListener('change',applyFilter);
-      }catch(e){ msgEl.innerHTML='<div class="error">読み込みエラー: '+e.message+'</div>'; }
+        qEl.addEventListener('input',applyFilter);
+        catEl.addEventListener('change',applyFilter);
+      }catch(e){
+        msgEl.innerHTML='<div class="error">読み込みエラー: '+e.message+'</div>';
+      }
     })();
   </script>
 </body>
