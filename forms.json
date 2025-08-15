@@ -1,18 +1,42 @@
 [
   {
-    "title": "出荷検査成績書 (MB46V)",
-    "slug": "inspection_mb46v",
-    "url": "https://<user>.github.io/<repo-mb46v>/index.html",
+    "title": "出荷検査成績書 (OKUMA46)",
+    "slug": "okuma46",
+    "url": "https://wahyu0312-source.github.io/okuma46/",
     "category": "QC",
-    "desc": "成績書（オークマ専用）。Apps Script 経由で Google Sheets に保存。",
+    "desc": "出荷検査成績書（OKUMA46）。Apps Script 経由で保存。",
     "updatedAt": "2025-08-15"
   },
   {
-    "title": "test form",
-    "slug": "Y_46",
-    "url": "https://wahyu0312-source.github.io/okuma46/index.html",
-    "category": "qc",
-    "desc": "社内購買申請フォーム。",
+    "title": "出荷検査成績書 (MB56)",
+    "slug": "mb56",
+    "url": "https://wahyu0312-source.github.io/mb56/",
+    "category": "QC",
+    "desc": "出荷検査成績書（MB56）。",
+    "updatedAt": "2025-08-15"
+  },
+  {
+    "title": "出荷検査成績書 (MB66V)",
+    "slug": "mb66v",
+    "url": "https://wahyu0312-source.github.io/mb66v/",
+    "category": "QC",
+    "desc": "出荷検査成績書（MB66V）。",
+    "updatedAt": "2025-08-15"
+  },
+  {
+    "title": "出荷検査成績書 (330380V)",
+    "slug": "330380v",
+    "url": "https://wahyu0312-source.github.io/330380v/",
+    "category": "QC",
+    "desc": "出荷検査成績書（330380V）。",
+    "updatedAt": "2025-08-15"
+  },
+  {
+    "title": "出荷検査成績書 (330580V)",
+    "slug": "330580v",
+    "url": "https://wahyu0312-source.github.io/330580v/",
+    "category": "QC",
+    "desc": "出荷検査成績書（330580V）。",
     "updatedAt": "2025-08-15"
   }
 ]
