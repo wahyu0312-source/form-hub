@@ -6,92 +6,66 @@
   <title>Forms Hub</title>
   <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
   <style>
-    body { background:#f6f7f9; }
-    header { padding: 1.2rem 0 0; }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-    .tag { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#eef0f4; }
-    .muted { color:#6b7280; font-size:12px; }
-    .error { background:#fee2e2; color:#991b1b; padding:.8rem; border-radius:.5rem; }
-    .searchbar { display:flex; gap:.6rem; align-items:center; }
+    body{background:#f6f7f9}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+    .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:#eef0f4}
+    .muted{color:#6b7280;font-size:12px}
+    .error{background:#fee2e2;color:#991b1b;padding:.8rem;border-radius:.5rem}
+    .searchbar{display:flex;gap:.6rem;align-items:center}
   </style>
 </head>
 <body>
   <main class="container">
     <header>
       <h2>📋 社内フォーム Hub</h2>
-      <p class="muted">各部署のフォームをまとめて一覧。検索やカテゴリで絞り込みできます。</p>
+      <p class="muted">フォームをまとめて一覧。検索やカテゴリで絞り込みできます。</p>
       <div class="searchbar">
         <input id="q" placeholder="検索（例: 検査, 購買, MB46V）" aria-label="検索">
-        <select id="cat">
-          <option value="">すべてのカテゴリ</option>
-        </select>
+        <select id="cat"><option value="">すべてのカテゴリ</option></select>
       </div>
     </header>
-
     <div id="list" class="grid"></div>
     <div id="msg"></div>
   </main>
 
   <script>
-    const qs = (s)=>document.querySelector(s);
-    const listEl = qs('#list');
-    const msgEl = qs('#msg');
-    const qEl = qs('#q');
-    const catEl = qs('#cat');
-    let FORMS = [];
-
-    function normalize(s){ return (s||'').toString().toLowerCase(); }
+    const qs=s=>document.querySelector(s);
+    const listEl=qs('#list'), msgEl=qs('#msg'), qEl=qs('#q'), catEl=qs('#cat');
+    let FORMS=[];
+    const norm=s=>(s||'').toString().toLowerCase();
 
     function render(items){
-      if(!Array.isArray(items) || items.length===0){
-        listEl.innerHTML = '<article><div class="error">フォームが見つかりません。forms.json を確認してください。</div></article>';
-        return;
-      }
-      listEl.innerHTML = items.map(f => `
+      if(!items.length){ listEl.innerHTML='<article><div class="error">フォームが見つかりません。forms.json を確認してください。</div></article>'; return; }
+      listEl.innerHTML=items.map(f=>`
         <article>
-          <header><strong>${f.title || '(無題フォーム)'}</strong></header>
-          ${f.desc ? `<p class="muted">${f.desc}</p>` : ''}
-          ${f.category ? `<span class="tag">${f.category}</span>` : ''}
-          ${f.updatedAt ? `<p class="muted">更新日: ${f.updatedAt}</p>` : ''}
-          <footer>
-            <a href="${f.url}" role="button">開く</a>
-          </footer>
-        </article>
-      `).join('');
+          <header><strong>${f.title||'(無題フォーム)'}</strong></header>
+          ${f.desc?`<p class="muted">${f.desc}</p>`:''}
+          ${f.category?`<span class="tag">${f.category}</span>`:''}
+          ${f.updatedAt?`<p class="muted">更新日: ${f.updatedAt}</p>`:''}
+          <footer><a href="${f.url}" role="button">開く</a></footer>
+        </article>`).join('');
     }
-
+    function fillCats(){
+      const cats=[...new Set(FORMS.map(f=>f.category).filter(Boolean))].sort();
+      catEl.innerHTML='<option value=\"\">すべてのカテゴリ</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+    }
     function applyFilter(){
-      const q = normalize(qEl.value);
-      const cat = catEl.value;
-      const filtered = FORMS.filter(f => {
-        if(cat && (f.category||'') !== cat) return false;
-        const hay = normalize([f.title, f.slug, f.desc, f.category].join(' '));
-        return hay.includes(q);
-      });
-      render(filtered);
+      const q=norm(qEl.value), cat=catEl.value;
+      render(FORMS.filter(f=>{
+        if(cat && (f.category||'')!==cat) return false;
+        return norm([f.title,f.slug,f.desc,f.category].join(' ')).includes(q);
+      }));
     }
-
-    function fillCategories(){
-      const cats = Array.from(new Set(FORMS.map(f => f.category).filter(Boolean))).sort();
-      catEl.innerHTML = '<option value="">すべてのカテゴリ</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
-    }
-
-    async function boot(){
+    (async()=>{
       try{
-        const res = await fetch('forms.json?v=' + Date.now());
-        if(!res.ok) throw new Error('forms.json を取得できません (' + res.status + ')');
-        FORMS = await res.json();
-        // sort by title
+        const res=await fetch('forms.json?v='+Date.now());
+        if(!res.ok) throw new Error('forms.json が見つかりません ('+res.status+')');
+        FORMS=await res.json();
         FORMS.sort((a,b)=> (a.title||'').localeCompare(b.title||''));
-        fillCategories();
-        render(FORMS);
-        qEl.addEventListener('input', applyFilter);
-        catEl.addEventListener('change', applyFilter);
-      }catch(err){
-        msgEl.innerHTML = '<div class="error">読み込みエラー: ' + err.message + '</div>';
-      }
-    }
-    boot();
+        fillCats(); render(FORMS);
+        qEl.addEventListener('input',applyFilter); catEl.addEventListener('change',applyFilter);
+      }catch(e){ msgEl.innerHTML='<div class="error">読み込みエラー: '+e.message+'</div>'; }
+    })();
   </script>
 </body>
 </html>
